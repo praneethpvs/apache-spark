@@ -423,7 +423,7 @@ Small Device Styles
 
 }
 
-@media screen and (max-width: 320px) {
+@media screen and (max-width: 720px) {
   body {
     font-size:14px;
   }
@@ -434,7 +434,7 @@ Small Device Styles
 
   .inner {
     min-width: 240px;
-    max-width: 320px;
+    max-width: 720px;
   }
 
   #project_title {
