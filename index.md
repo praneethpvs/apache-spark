@@ -25,121 +25,7 @@ Before that let's create a barebone maven project. I prefer using `Intellij IDEA
 ![Creating a maven project](/images/1/mainproj.png)
 
 
-After successful creation of project copy the below dependencies to your `pom.xml` file.
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>shashank.spark</groupId>
-    <artifactId>shashank.spark</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.8</java.version>
-        <scala.version>2.11</scala.version>
-        <spark.version>2.3.1</spark.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
-
-    <dependencies>
-        <!-- Spark -->
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_${scala.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_${scala.version}</artifactId>
-            <version>${spark.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-mllib_${scala.version}</artifactId>
-            <version>${spark.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-
-    </dependencies>
-
-    <build>
-
-        <plugins>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.build.directory}/libs
-                            </outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                        <configuration>
-
-                            <mainClass>shashank.spark.Application</mainClass>
-
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-        </plugins>
-
-    </build>
-
-</project>
-```
+After successful creation of project copy the below dependencies to your `pom.xml` file. The file can be found [here](/code/dependencies/maven-1/pom.xml)
 
 Maven might take some time depending on your internet connection to download the required dependencies for running spark.
 
@@ -170,3 +56,41 @@ This will be the starting point of our application.
 │   └── test
 └── target
 ```
+
+## `Application.java`
+
+Let us first import the necessary packages.
+
+```java
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+
+import static org.apache.spark.sql.functions.*;
+```
+
+#### The `main` method
+
+```java
+public class Application {
+    public static void main (String[] args) {
+
+        // first let's build a spark session
+        SparkSession spark = new SparkSession.Builder()
+                            .master ("local")
+                            .getOrCreate();
+
+
+        // For dataset - durham-parks.json
+        // Link - https://catalog.data.gov/dataset/city-parks/resource/9aae96c0-2e71-480c-bfb3-9151d82147a1
+        Dataset<Row> dfbuildDD = buildDD(spark);
+        dfbuildDD.show(10);
+
+        // For dataset - Philadelphia_recreations.csv
+        // Link - https://www.opendataphilly.org/dataset
+        Dataset<Row> dfbuildPPD = buildPPD(spark);
+        dfbuildPPD.show(20);
+    }
+}
+```
+
