@@ -69,20 +69,20 @@ import org.apache.spark.sql.SparkSession;
 import static org.apache.spark.sql.functions.*;
 ```
 
-#### The `main` method
+#### The main method
 
 ```java
 public class Application {
     public static void main (String[] args) {
-
         // first let's build a spark session
-        SparkSession spark = new SparkSession.Builder()
+        SparkSession 
+            spark = new 
+                    SparkSession.Builder()
                             .master ("local")
                             .getOrCreate();
 
-
         // For dataset - durham-parks.json
-        // Link - https://catalog.data.gov/dataset/city-parks/resource/9aae96c0-2e71-480c-bfb3-9151d82147a1
+        // Link - https://catalog.data.gov/dataset/city-parks
         Dataset<Row> dfbuildDD = buildDD(spark);
         dfbuildDD.show(10);
 
@@ -93,4 +93,104 @@ public class Application {
     }
 }
 ```
+
+### The buildDD method
+
+In this method we will read the contents of `durham-parks.json` file and try to modify some of the rows. We will try to concat new rows to the existing `Dataset`.
+
+```java
+// first we read the Dataset
+Dataset<Row> 
+    df = spark
+            .read()
+            .format("json")
+            .option("multiline", true)
+            .load("src/main/resources/durham-parks.json");
+```
+
+Now we modify the columns. This can we achieved by the function `withColumn` which is applied on `Dataset` instance.
+
+```java
+df = df.withColumn("park_id",
+            concat(
+                    df.col("datasetid"),
+                    lit("_"),
+                    df.col("fields.objectid"),
+                    lit("_Durham")
+                )
+            )
+```
+
+Similarly, for another column for `park_name`.
+
+```java
+.withColumn(
+             "park_name",
+            df.col("fields.park_name")
+        )
+```
+
+Similarly, for another column for `city`.
+
+```java
+.withColumn(
+            "city",
+            lit("Durhma")
+    )
+```
+
+Similarly, for some other columns.
+
+```java
+.withColumn(
+            "has_playground",
+            df.col("fields.playground")
+        )
+        .withColumn(
+            "zipcode",
+             df.col("fields.zip")
+        )
+        .withColumn(
+            "land_in_acres",
+            df.col("fields.acres")
+        )
+        .withColumn(
+            "geoX",
+            df.col("geometry.coordinates")
+            .getItem(0)
+        )
+        .withColumn(
+            "geoY",
+            df.col("geometry.coordinates")
+            .getItem(1)
+        );
+```
+At the end we return the `Dataset` instance `df`.
+
+```java'
+return df;
+```
+
+### buildPPD method
+
+```java
+public static Dataset<Row> buildPPD (SparkSession spark) {
+        // populate the dataframe
+        Dataset<Row> 
+            df = spark
+                    .read()
+                    .format("csv")
+                    .option("multiline", true)
+                    .option("header", true)
+            .load("src/main/resources/philadelphia_recreations.csv");
+
+        df = df.filter(
+            lower(df.col("USE_"))
+            like("%park%")
+        );
+
+        return df;
+    }
+```
+
 
