@@ -95,7 +95,7 @@ public class Application {
 }
 ```
 
-### The buildDD method
+### The `buildDD` method (Processing the `durham-parks.json` data)
 
 In this method we will read the contents of `durham-parks.json` file and try to modify some of the rows. We will try to concat new rows to the existing `Dataset`.
 
@@ -172,7 +172,7 @@ At the end we return the `Dataset` instance `df`.
 return df;
 ```
 
-### buildPPD method
+### The `buildPPD` method (Processing the `hiladelphia_recreations.csv` data)
 
 ```java
 public static Dataset<Row> buildPPD (SparkSession spark) {
@@ -195,6 +195,8 @@ public static Dataset<Row> buildPPD (SparkSession spark) {
 ```
 
 So when we sun the spark program we get the output which is quite pretty big. You can find the output [here](./pro1.txt).
+
+## [Next Page](./2.md)
 
 
 
