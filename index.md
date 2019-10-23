@@ -6,4 +6,5 @@ The main aim is to develop a robust and reliable distributed system for `fog-com
 
 |   SNO	|   TOC	|   LINK	|
 |---	|---	|---	|
-|   1	|   Intro to Apache Spark	|   [Link](/docs/beginning/index.md)	|
+|   1	|   Intro to Apache Spark	|   [Link](/docs/beginning/index.md) |
+|   2	|   Dataset and Dataframe	|   [Link](/docs/ds-df/datasetvsdataframe.md) |
